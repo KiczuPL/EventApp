@@ -1,11 +1,10 @@
 import React, {Component, useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 
 import * as config from '../../config/config';
 
-import {Avatar, Badge, Button, Dialog} from '@rneui/themed';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import EventDetailsDialog from './EventDetailsDialog';
 
 MapLibreGL.setAccessToken(null);
 
@@ -26,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface EventMapGeoJson {
+export interface EventMapGeoJson {
   type: string;
   geometry: {};
   properties: MarkerProperties;
@@ -34,12 +33,24 @@ interface EventMapGeoJson {
 
 interface MarkerProperties {
   icon: string;
+  id: number;
 }
 
 export default () => {
   const [visible, setVisible] = useState(false);
   const [geoJson, setGeoJson] = useState<EventMapGeoJson[]>([]);
+  const [selectedEventMarker, setSelectedEventMarker] =
+    useState<EventMapGeoJson>({
+      type: 's',
+      geometry: {type: 'Point', coordinates: [2.294694, 47.858093]},
+      properties: {icon: 'a', id: 0},
+    });
   const toggleDialog = () => setVisible(!visible);
+
+  const handleMarkerPress = (marker: EventMapGeoJson) => {
+    setSelectedEventMarker(marker);
+    toggleDialog();
+  };
 
   useEffect(() => {
     //console.log(MapMarkers.features);
@@ -52,6 +63,7 @@ export default () => {
         },
         properties: {
           icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
+          id: 1,
         },
       },
       {
@@ -62,6 +74,7 @@ export default () => {
         },
         properties: {
           icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
+          id: 2,
         },
       },
       {
@@ -72,6 +85,7 @@ export default () => {
         },
         properties: {
           icon: 'https://www.jawg.io/docs/images/icons/eiffel-tower.png',
+          id: 3,
         },
       },
       {
@@ -82,6 +96,7 @@ export default () => {
         },
         properties: {
           icon: 'https://www.jawg.io/docs/images/icons/eiffel-tower.png',
+          id: 4,
         },
       },
       {
@@ -92,6 +107,7 @@ export default () => {
         },
         properties: {
           icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
+          id: 5,
         },
       },
     ];
@@ -123,8 +139,8 @@ export default () => {
             return (
               <MapLibreGL.ShapeSource
                 id={'marker-source-' + index}
-                onPress={toggleDialog}
-                cluster={false}
+                onPress={() => handleMarkerPress(marker)}
+                cluster={true}
                 shape={{
                   type: 'Feature',
                   geometry: marker.geometry,
@@ -140,20 +156,11 @@ export default () => {
           })}
         </MapLibreGL.MapView>
 
-        <Dialog isVisible={visible} onBackdropPress={toggleDialog}>
-          <Dialog.Title title="Dialog Title" />
-          <Text>Dialog body text. Add relevant information here.</Text>
-          <Dialog.Actions>
-            <Dialog.Button
-              title="ACTION 1"
-              onPress={() => console.log('Primary Action Clicked!')}
-            />
-            <Dialog.Button
-              title="ACTION 2"
-              onPress={() => console.log('Secondary Action Clicked!')}
-            />
-          </Dialog.Actions>
-        </Dialog>
+        <EventDetailsDialog
+          visible={visible}
+          toggleDialog={toggleDialog}
+          event={selectedEventMarker}
+        />
       </View>
     </View>
   );

@@ -1,10 +1,7 @@
-import React, {Component, useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
 import MapLibreGL from '@maplibre/maplibre-react-native';
+import React from 'react';
+import {StyleSheet} from 'react-native';
 
-import * as config from '../config/config';
-
-import {Avatar, Button, Dialog, Icon} from '@rneui/themed';
 import EventMap from '../components/organisms/EventMap';
 
 MapLibreGL.setAccessToken(null);

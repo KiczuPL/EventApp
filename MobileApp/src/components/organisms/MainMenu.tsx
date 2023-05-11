@@ -1,17 +1,7 @@
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {View} from 'react-native';
-import {Text, Button, Card, Portal} from 'react-native-paper';
-import CreateEvent from '../components/organisms/CreateEvent';
-import {useState} from 'react';
+import {Card, Text} from 'react-native-paper';
 
 export default () => {
-  const [createEventDialogVisible, setCreateEventDialogVisible] =
-    useState(false);
-
-  const toggleCreateEventDialog = () => {
-    setCreateEventDialogVisible(!createEventDialogVisible);
-  };
-
   return (
     <View
       style={{
@@ -47,21 +37,13 @@ export default () => {
           </Card>
         </View>
         <View>
-          <Card
-            style={{backgroundColor: 'green'}}
-            onPress={toggleCreateEventDialog}>
+          <Card style={{backgroundColor: 'green'}}>
             <Card.Content>
               <Text variant="titleLarge">Create event</Text>
             </Card.Content>
           </Card>
         </View>
       </View>
-      <Portal>
-        <CreateEvent
-          visible={createEventDialogVisible}
-          toggle={toggleCreateEventDialog}
-        />
-      </Portal>
     </View>
   );
 };
