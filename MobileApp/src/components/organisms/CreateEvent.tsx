@@ -39,10 +39,9 @@ export default ({visible, toggle}: createEventDialogProps) => {
     setTimePickerVisible(!timePickerVisible);
   }, [timePickerVisible]);
 
-  console.log('rerender');
   const pickPlace = useCallback(
     (coordinates: Coordinates) => {
-      console.log('AAAAAAAAAAAAAAAAAA');
+      //console.log('AAAAAAAAAAAAAAAAAA');
       setCoordinates(coordinates);
       //togglePlacePicker();
     },

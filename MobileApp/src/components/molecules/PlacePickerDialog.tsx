@@ -34,8 +34,9 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
 
   const handleClick = useCallback(
     (cords: number[]) => {
-      console.log(cords);
       setCoordinates(cords);
+      // console.log(cords);
+      // console.log(coordinates);
       setTargetCoordinates({
         latitude: cords[0],
         longitude: cords[1],
@@ -43,10 +44,6 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
     },
     [setCoordinates],
   );
-
-  const handleSubmit = useCallback(() => {
-    toggle();
-  }, [setTargetCoordinates, toggle]);
 
   if (!visible) return null;
   return (
@@ -58,7 +55,7 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
         attributionPosition={{bottom: 8, left: 8}}
         styleURL={config.styleurl}
         onPress={feature => {
-          console.log('Coords:', feature.geometry.coordinates);
+          //console.log('Coords:', feature.geometry.coordinates);
           setCoordinates(feature.geometry.coordinates);
           handleClick(feature.geometry.coordinates);
         }}>
@@ -98,7 +95,7 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
           <Button
             style={{backgroundColor: 'dimgray'}}
             mode="contained"
-            onPress={handleSubmit}>
+            onPress={toggle}>
             Pick place
           </Button>
         </View>
