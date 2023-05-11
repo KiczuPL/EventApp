@@ -135,7 +135,7 @@ export default () => {
             }}
           />
           {geoJson.map((marker, index) => {
-            console.log(marker.properties.icon);
+            //console.log(marker.properties.icon);
             return (
               <MapLibreGL.ShapeSource
                 id={'marker-source-' + index}
@@ -150,7 +150,8 @@ export default () => {
                   style={{
                     iconImage: marker.properties.icon,
                     iconSize: 0.5,
-                  }}></MapLibreGL.SymbolLayer>
+                  }}
+                />
               </MapLibreGL.ShapeSource>
             );
           })}

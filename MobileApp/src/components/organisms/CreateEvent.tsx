@@ -1,7 +1,8 @@
 import {useCallback, useState} from 'react';
 import {View} from 'react-native';
-import {Button, Modal, Text, TextInput} from 'react-native-paper';
+import {Button, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import {TimePickerModal, DatePickerModal} from 'react-native-paper-dates';
+import PlacePickerDialog from '../molecules/PlacePickerDialog';
 
 type createEventDialogProps = {
   visible: boolean;
@@ -13,11 +14,22 @@ type Time = {
   minutes: number;
 };
 
+export type Coordinates = {
+  longitude: number;
+  latitude: number;
+};
+
 export default ({visible, toggle}: createEventDialogProps) => {
   const [datePickerVisible, setDatePickererVisible] = useState(false);
   const [timePickerVisible, setTimePickerVisible] = useState(false);
+  const [placePickerVisible, setPlacePickerVisible] = useState(false);
+  const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState<Time | undefined>();
+
+  const togglePlacePicker = useCallback(() => {
+    setPlacePickerVisible(!placePickerVisible);
+  }, [placePickerVisible]);
 
   const toggleDatePicker = useCallback(() => {
     setDatePickererVisible(!datePickerVisible);
@@ -26,6 +38,16 @@ export default ({visible, toggle}: createEventDialogProps) => {
   const toggleTimePicker = useCallback(() => {
     setTimePickerVisible(!timePickerVisible);
   }, [timePickerVisible]);
+
+  console.log('rerender');
+  const pickPlace = useCallback(
+    (coordinates: Coordinates) => {
+      console.log('AAAAAAAAAAAAAAAAAA');
+      setCoordinates(coordinates);
+      //togglePlacePicker();
+    },
+    [setCoordinates, togglePlacePicker],
+  );
 
   const pickTime = useCallback(
     ({hours, minutes}: Time) => {
@@ -91,6 +113,13 @@ export default ({visible, toggle}: createEventDialogProps) => {
             {date?.getDay() ? dateFormatter.format(date) : 'Date'}
           </Button>
         </View>
+        <View style={{flexDirection: 'row', paddingBottom: 10}}>
+          <Button mode="contained" onPress={togglePlacePicker}>
+            {coordinates
+              ? coordinates.latitude + ', ' + coordinates.longitude
+              : 'Place'}
+          </Button>
+        </View>
       </View>
 
       <TimePickerModal
@@ -107,6 +136,11 @@ export default ({visible, toggle}: createEventDialogProps) => {
         date={date}
         onDismiss={toggleDatePicker}
         onConfirm={pickDate}
+      />
+      <PlacePickerDialog
+        visible={placePickerVisible}
+        toggle={togglePlacePicker}
+        setTargetCoordinates={pickPlace}
       />
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Button mode="contained" onPress={toggle}>
