@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import ChatScreen from './src/screens/ChatScreen';
 import HomeScreen from './src/screens/HomeScreen';
-import MapScreen from './src/screens/MapScreen';
+import MapScreen from './src/features/events/screens/MapScreen';
 
 import {pl, registerTranslation} from 'react-native-paper-dates';
 registerTranslation('pl', pl);

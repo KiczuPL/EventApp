@@ -1,10 +1,14 @@
-import React, {Component, useEffect, useState} from 'react';
+import React, {Component, useCallback, useEffect, useState} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 
 import * as config from '../../config/config';
 
 import EventDetailsDialog from './EventDetailsDialog';
+import {getEventsGeoJson} from '../../features/events/api/getEventsGeoJson';
+import axios from 'axios';
+import {BACKEND_EVENT_API_URL} from '../../features/events/api/constants';
+import {Button, Portal} from 'react-native-paper';
 
 MapLibreGL.setAccessToken(null);
 
@@ -27,6 +31,11 @@ const styles = StyleSheet.create({
 
 export interface EventMapGeoJson {
   type: string;
+  features: SingleEventMapGeoJson[];
+}
+
+export interface SingleEventMapGeoJson {
+  type: string;
   geometry: {};
   properties: MarkerProperties;
 }
@@ -38,86 +47,31 @@ interface MarkerProperties {
 
 export default () => {
   const [visible, setVisible] = useState(false);
-  const [geoJson, setGeoJson] = useState<EventMapGeoJson[]>([]);
-  const [selectedEventMarker, setSelectedEventMarker] =
-    useState<EventMapGeoJson>({
-      type: 's',
-      geometry: {type: 'Point', coordinates: [2.294694, 47.858093]},
-      properties: {icon: 'a', id: 0},
-    });
+  const [isLoading, setIsLoading] = useState(true);
+  const [geoJson, setGeoJson] = useState<EventMapGeoJson>();
+  const [selectedEventMarker, setSelectedEventMarker] = useState<
+    SingleEventMapGeoJson | undefined
+  >(undefined);
   const toggleDialog = () => setVisible(!visible);
 
-  const handleMarkerPress = (marker: EventMapGeoJson) => {
+  const handleMarkerPress = (marker: SingleEventMapGeoJson) => {
     setSelectedEventMarker(marker);
     toggleDialog();
   };
 
   useEffect(() => {
-    //console.log(MapMarkers.features);
-    const markers: EventMapGeoJson[] = [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [2.294694, 47.858093],
-        },
-        properties: {
-          icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
-          id: 1,
-        },
-      },
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [3.294694, 47.858093],
-        },
-        properties: {
-          icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
-          id: 2,
-        },
-      },
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [4.294694, 47.858093],
-        },
-        properties: {
-          icon: 'https://www.jawg.io/docs/images/icons/eiffel-tower.png',
-          id: 3,
-        },
-      },
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [2.294694, 48.858093],
-        },
-        properties: {
-          icon: 'https://www.jawg.io/docs/images/icons/eiffel-tower.png',
-          id: 4,
-        },
-      },
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [2.294694, 49.858093],
-        },
-        properties: {
-          icon: 'https://www.jawg.io/docs/images/icons/big-ben.png',
-          id: 5,
-        },
-      },
-    ];
+    if (isLoading) {
+      console.log('CALL for geojson');
 
-    setGeoJson(markers);
-    console.log({
-      type: 'FeatureCollection',
-      features: geoJson,
-    });
-  }, []);
+      fetch(BACKEND_EVENT_API_URL + 'event/geoJson')
+        .then(response => response.json())
+        .then(responseJson => {
+          console.log('AAAPI response: ' + JSON.stringify(responseJson));
+          setGeoJson(responseJson);
+        });
+      setIsLoading(false);
+    }
+  }, [isLoading]);
 
   return (
     <View style={styles.page}>
@@ -130,12 +84,14 @@ export default () => {
           styleURL={config.styleurl}>
           <MapLibreGL.Camera
             defaultSettings={{
-              centerCoordinate: [2.3210938, 48.8565913],
+              centerCoordinate: [21.017532, 52.237049],
               zoomLevel: 5,
             }}
           />
-          {geoJson.map((marker, index) => {
-            //console.log(marker.properties.icon);
+          {geoJson?.features?.map((marker, index) => {
+            // console.log(
+            //   BACKEND_EVENT_API_URL + 'event/' + marker.properties.id + '/icon',
+            // );
             return (
               <MapLibreGL.ShapeSource
                 id={'marker-source-' + index}
@@ -148,14 +104,34 @@ export default () => {
                 <MapLibreGL.SymbolLayer
                   id={'marker' + index}
                   style={{
-                    iconImage: marker.properties.icon,
-                    iconSize: 0.5,
+                    iconImage:
+                      BACKEND_EVENT_API_URL +
+                      'event/' +
+                      marker.properties.id +
+                      '/icon',
+                    iconSize: 0.25,
                   }}
                 />
               </MapLibreGL.ShapeSource>
             );
           })}
         </MapLibreGL.MapView>
+        <Portal>
+          <View
+            style={{
+              marginTop: 'auto',
+              marginBottom: 100,
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            <Button
+              style={{backgroundColor: 'dimgray'}}
+              mode="contained"
+              onPress={() => setIsLoading(true)}>
+              Refresh
+            </Button>
+          </View>
+        </Portal>
 
         <EventDetailsDialog
           visible={visible}

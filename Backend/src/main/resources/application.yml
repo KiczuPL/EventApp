@@ -1,0 +1,31 @@
+
+
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/event_app
+    username: app
+    password: app
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+server:
+  address: 10.147.20.1
+  port: 80
+  #address: 10.147.20.1
+  #port: 80
+  error:
+    include-message: always
