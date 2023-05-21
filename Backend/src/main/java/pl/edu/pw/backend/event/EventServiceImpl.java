@@ -1,6 +1,7 @@
 package pl.edu.pw.backend.event;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
@@ -35,6 +37,7 @@ public class EventServiceImpl implements EventService {
                 .creationDateTime(ZonedDateTime.now())
                 .iconFilename(form.iconFilename())
                 .build();
+        log.info("New event created: {}",event);
         return eventRepository.save(event);
     }
 
@@ -49,17 +52,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public byte[] getEventIcon(Long id) throws IOException {
-        String iconFilename = eventRepository.findEventIconFilenameById(id).getIconFilename();
-        var imgFile = new ClassPathResource("eventIcons/" + iconFilename + ".png");
-        return StreamUtils.copyToByteArray(imgFile.getInputStream());
-    }
-
-    @Override
     public EventGeoJson getAllEventsGeoJson() {
         List<ProjectIdLatitudeLongitudeIconFilename> events = eventRepository.findAllProjectedBy();
         List<EventGeoJsonFeature> features = events.stream().map(EventGeoJsonFeature::new).toList();
         return new EventGeoJson(features);
+    }
+
+
+    @Override
+    public byte[] getEventIcon(Long id) throws IOException {
+        String iconFilename = eventRepository.findEventIconFilenameById(id).getIconFilename();
+        return getIcon(iconFilename);
+    }
+
+    @Override
+    public byte[] getIcon(String filename) throws IOException {
+        var imgFile = new ClassPathResource("eventIcons/" + filename + ".png");
+        return StreamUtils.copyToByteArray(imgFile.getInputStream());
     }
 
     @Override

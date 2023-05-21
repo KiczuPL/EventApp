@@ -1,8 +1,10 @@
 import {useCallback, useState} from 'react';
-import {View} from 'react-native';
+import {Image, TouchableOpacity, View} from 'react-native';
 import {Button, Modal, Portal, Text, TextInput} from 'react-native-paper';
 import {TimePickerModal, DatePickerModal} from 'react-native-paper-dates';
 import PlacePickerDialog from '../molecules/PlacePickerDialog';
+import PickEventIconDialog from '../molecules/PickEventIconDialog';
+import {BACKEND_EVENT_API_URL} from '../../features/events/api/constants';
 
 type createEventDialogProps = {
   visible: boolean;
@@ -23,7 +25,9 @@ export default ({visible, toggle}: createEventDialogProps) => {
   const [datePickerVisible, setDatePickererVisible] = useState(false);
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [placePickerVisible, setPlacePickerVisible] = useState(false);
+  const [iconPickerVisible, setIconPickerVisible] = useState(false);
   const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
+  const [iconFilename, setIconFilename] = useState<string | undefined>();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [time, setTime] = useState<Time | undefined>();
 
@@ -38,6 +42,10 @@ export default ({visible, toggle}: createEventDialogProps) => {
   const toggleTimePicker = useCallback(() => {
     setTimePickerVisible(!timePickerVisible);
   }, [timePickerVisible]);
+
+  const toggleIconPicker = useCallback(() => {
+    setIconPickerVisible(!iconPickerVisible);
+  }, [iconPickerVisible]);
 
   const pickPlace = useCallback(
     (coordinates: Coordinates) => {
@@ -119,6 +127,22 @@ export default ({visible, toggle}: createEventDialogProps) => {
               : 'Place'}
           </Button>
         </View>
+        <View style={{flexDirection: 'row', paddingBottom: 10}}>
+          {iconFilename ? (
+            <TouchableOpacity onPress={toggleIconPicker}>
+              <Image
+                source={{
+                  uri: BACKEND_EVENT_API_URL + 'event/icons/' + iconFilename,
+                }}
+                style={{width: 50, height: 50}}
+              />
+            </TouchableOpacity>
+          ) : (
+            <Button mode="contained" onPress={toggleIconPicker}>
+              Icon
+            </Button>
+          )}
+        </View>
       </View>
 
       <TimePickerModal
@@ -140,6 +164,11 @@ export default ({visible, toggle}: createEventDialogProps) => {
         visible={placePickerVisible}
         toggle={togglePlacePicker}
         setTargetCoordinates={pickPlace}
+      />
+      <PickEventIconDialog
+        visible={iconPickerVisible}
+        toggle={toggleIconPicker}
+        setTargetIconFilename={setIconFilename}
       />
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <Button mode="contained" onPress={toggle}>

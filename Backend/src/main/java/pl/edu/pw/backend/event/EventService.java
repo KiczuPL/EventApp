@@ -20,4 +20,6 @@ public interface EventService {
     EventGeoJson getAllEventsGeoJson();
 
     ProjectEventDetails getEventDetails(Long id);
+
+    byte[] getIcon(String filename) throws IOException;
 }
