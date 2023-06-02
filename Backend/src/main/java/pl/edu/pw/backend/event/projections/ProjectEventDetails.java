@@ -6,11 +6,17 @@ import java.time.ZonedDateTime;
 
 public interface ProjectEventDetails {
     Long getId();
+
     String getTitle();
+
     String getDescription();
+
     Double getLatitude();
+
     Double getLongitude();
+
     ZonedDateTime getStartDateTime();
+
     ProjectUser getOwner();
 
 }

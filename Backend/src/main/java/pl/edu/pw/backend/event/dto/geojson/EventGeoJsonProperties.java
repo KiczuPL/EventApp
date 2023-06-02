@@ -7,6 +7,7 @@ import pl.edu.pw.backend.event.projections.ProjectIdLatitudeLongitudeIconFilenam
 public class EventGeoJsonProperties {
     private Long id;
     private String icon;
+
     public EventGeoJsonProperties(ProjectIdLatitudeLongitudeIconFilename projectIdLatitudeLongitudeIconFilename) {
         this.id = projectIdLatitudeLongitudeIconFilename.getId();
         this.icon = projectIdLatitudeLongitudeIconFilename.getIconFilename();

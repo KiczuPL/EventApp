@@ -13,6 +13,7 @@ public interface EventService {
     Event addEvent(CreateEventForm form);
 
     List<Event> getAllEvents();
+
     void deleteEvent(Long id);
 
     byte[] getEventIcon(Long id) throws IOException;

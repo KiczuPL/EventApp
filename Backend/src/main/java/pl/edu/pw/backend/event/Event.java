@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.edu.pw.backend.user.AppUser;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 @Entity

@@ -10,9 +10,7 @@ import pl.edu.pw.backend.event.dto.geojson.EventGeoJson;
 import pl.edu.pw.backend.event.forms.CreateEventForm;
 import pl.edu.pw.backend.event.projections.ProjectEventDetails;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/event")
+@RequestMapping("/api/private/v1/event")
 public class EventController {
 
     private final EventService eventService;

@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class EventGeoJson {
-    private String type= "FeatureCollection";
+    private String type = "FeatureCollection";
     private List<EventGeoJsonFeature> features;
 
     public EventGeoJson(List<EventGeoJsonFeature> features) {

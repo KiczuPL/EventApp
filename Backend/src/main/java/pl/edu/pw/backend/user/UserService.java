@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface UserService {
     AppUser getUserById(Long id);
+
     List<AppUser> getAllUsers();
 
     AppUser addUser(CreateUserForm createUserForm);

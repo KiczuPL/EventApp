@@ -14,7 +14,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    private AppUser addUser(@RequestBody CreateUserForm form){
+    private AppUser addUser(@RequestBody CreateUserForm form) {
         return userService.addUser(form);
     }
 }

@@ -1,6 +1,6 @@
-
-
-
+app:
+  cors:
+    allowed-origins: http://10.147.20.2
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/event_app
@@ -9,6 +9,11 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-phlbwuivnwgq0kxl.us.auth0.com/
   jpa:
     show-sql: true
     hibernate:
@@ -29,3 +34,6 @@ server:
   #port: 80
   error:
     include-message: always
+
+auth0:
+  audience: https://eventap-api/

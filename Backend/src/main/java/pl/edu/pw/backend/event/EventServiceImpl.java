@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
-import pl.edu.pw.backend.event.dto.geojson.EventGeoJsonFeature;
 import pl.edu.pw.backend.event.dto.geojson.EventGeoJson;
+import pl.edu.pw.backend.event.dto.geojson.EventGeoJsonFeature;
 import pl.edu.pw.backend.event.forms.CreateEventForm;
 import pl.edu.pw.backend.event.projections.ProjectEventDetails;
 import pl.edu.pw.backend.event.projections.ProjectIdLatitudeLongitudeIconFilename;
@@ -37,7 +37,7 @@ public class EventServiceImpl implements EventService {
                 .creationDateTime(ZonedDateTime.now())
                 .iconFilename(form.iconFilename())
                 .build();
-        log.info("New event created: {}",event);
+        log.info("New event created: {}", event);
         return eventRepository.save(event);
     }
 
@@ -53,6 +53,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventGeoJson getAllEventsGeoJson() {
+        log.info("Getting geoJSON");
         List<ProjectIdLatitudeLongitudeIconFilename> events = eventRepository.findAllProjectedBy();
         List<EventGeoJsonFeature> features = events.stream().map(EventGeoJsonFeature::new).toList();
         return new EventGeoJson(features);

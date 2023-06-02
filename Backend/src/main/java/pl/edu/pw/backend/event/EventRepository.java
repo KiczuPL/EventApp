@@ -9,8 +9,9 @@ import pl.edu.pw.backend.event.projections.ProjectIdLatitudeLongitudeIconFilenam
 import java.util.List;
 
 @Repository
-public interface EventRepository extends JpaRepository<Event,Long> {
+public interface EventRepository extends JpaRepository<Event, Long> {
     ProjectIdAndIconFilename findEventIconFilenameById(Long id);
+
     List<ProjectIdLatitudeLongitudeIconFilename> findAllProjectedBy();
 
     ProjectEventDetails findProjectEventDetailsById(Long id);
