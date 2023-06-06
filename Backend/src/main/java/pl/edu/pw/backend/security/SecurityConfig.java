@@ -2,6 +2,7 @@ package pl.edu.pw.backend.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -14,7 +15,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static jakarta.servlet.DispatcherType.ERROR;
+import static jakarta.servlet.DispatcherType.FORWARD;
+
 @EnableWebSecurity
+@Configuration
 public class SecurityConfig {
 
     @Value("${auth0.audience}")
@@ -25,11 +30,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.cors().and().authorizeHttpRequests().anyRequest().permitAll()
+        http.csrf().disable().cors().and().authorizeHttpRequests()
                 //.requestMatchers("/**").permitAll()
-                //.requestMatchers("/api/public").permitAll()
-                //.requestMatchers("/api/private").authenticated()
+                .dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
+                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/private/**").authenticated()
                 .and().oauth2ResourceServer().jwt();
         return http.build();
     }

@@ -2,9 +2,7 @@ package pl.edu.pw.backend.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 import pl.edu.pw.backend.event.dto.geojson.EventGeoJson;
 import pl.edu.pw.backend.event.dto.geojson.EventGeoJsonFeature;
 import pl.edu.pw.backend.event.forms.CreateEventForm;
@@ -13,7 +11,6 @@ import pl.edu.pw.backend.event.projections.ProjectIdLatitudeLongitudeIconFilenam
 import pl.edu.pw.backend.user.AppUser;
 import pl.edu.pw.backend.user.UserService;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -57,19 +54,6 @@ public class EventServiceImpl implements EventService {
         List<ProjectIdLatitudeLongitudeIconFilename> events = eventRepository.findAllProjectedBy();
         List<EventGeoJsonFeature> features = events.stream().map(EventGeoJsonFeature::new).toList();
         return new EventGeoJson(features);
-    }
-
-
-    @Override
-    public byte[] getEventIcon(Long id) throws IOException {
-        String iconFilename = eventRepository.findEventIconFilenameById(id).getIconFilename();
-        return getIcon(iconFilename);
-    }
-
-    @Override
-    public byte[] getIcon(String filename) throws IOException {
-        var imgFile = new ClassPathResource("eventIcons/" + filename + ".png");
-        return StreamUtils.copyToByteArray(imgFile.getInputStream());
     }
 
     @Override
