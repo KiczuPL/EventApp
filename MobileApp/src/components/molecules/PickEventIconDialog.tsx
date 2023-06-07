@@ -1,7 +1,10 @@
 import {useEffect, useState} from 'react';
 import {Image, TouchableOpacity, View} from 'react-native';
 import {Modal, Portal} from 'react-native-paper';
-import {BACKEND_EVENT_API_URL} from '../../features/events/api/constants';
+import {
+  BACKEND_EVENT_PRIVATE_API_URL,
+  BACKEND_EVENT_PUBLIC_API_URL,
+} from '../../features/events/api/constants';
 
 type Props = {
   visible: boolean;
@@ -14,7 +17,7 @@ export default ({visible, toggle, setTargetIconFilename}: Props) => {
   const [iconFilenames, setIconFilenames] = useState<string[]>();
   useEffect(() => {
     if (isLoading) {
-      fetch(BACKEND_EVENT_API_URL + 'event/icons')
+      fetch(BACKEND_EVENT_PUBLIC_API_URL + 'icon')
         .then(response => response.json())
         .then(responseJson => {
           setIconFilenames(responseJson);
@@ -44,7 +47,7 @@ export default ({visible, toggle, setTargetIconFilename}: Props) => {
               }}>
               <Image
                 source={{
-                  uri: BACKEND_EVENT_API_URL + 'event/icons/' + iconFilename,
+                  uri: BACKEND_EVENT_PUBLIC_API_URL + 'icon/' + iconFilename,
                 }}
                 style={{width: 50, height: 50}}
               />

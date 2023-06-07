@@ -2,13 +2,14 @@ import React, {Component, useCallback, useEffect, useState} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 
-import * as config from '../../config/config';
+import * as config from '../../../config/config';
 
 import EventDetailsDialog from './EventDetailsDialog';
-import {getEventsGeoJson} from '../../features/events/api/getEventsGeoJson';
-import axios from 'axios';
-import {BACKEND_EVENT_API_URL} from '../../features/events/api/constants';
+import {getEventsGeoJson} from '../api/getEventsGeoJson';
+import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
 import {Button, Portal} from 'react-native-paper';
+import {useAuth0} from 'react-native-auth0';
+import {useNavigation} from '@react-navigation/native';
 
 MapLibreGL.setAccessToken(null);
 
@@ -52,6 +53,12 @@ export default () => {
   const [selectedEventMarker, setSelectedEventMarker] = useState<
     SingleEventMapGeoJson | undefined
   >(undefined);
+  const [refreshButtonVisible, setRefreshButtonVisible] =
+    useState<boolean>(false);
+
+  const navigation = useNavigation();
+  const {getCredentials} = useAuth0();
+
   const toggleDialog = () => setVisible(!visible);
 
   const handleMarkerPress = (marker: SingleEventMapGeoJson) => {
@@ -59,18 +66,31 @@ export default () => {
     toggleDialog();
   };
 
-  useEffect(() => {
-    if (isLoading) {
-      console.log('CALL for geojson');
+  const getAccessToken = async () => {
+    const credentials = await getCredentials();
+    return credentials.accessToken;
+  };
 
-      fetch(BACKEND_EVENT_API_URL + 'event/geoJson')
-        .then(response => response.json())
-        .then(responseJson => {
-          console.log('AAAPI response: ' + JSON.stringify(responseJson));
-          setGeoJson(responseJson);
-        });
-      setIsLoading(false);
-    }
+  useEffect(() => {
+    const showRefreshButton = navigation.addListener('focus', () => {
+      setRefreshButtonVisible(true);
+    });
+    const hideRefreshButton = navigation.addListener('blur', () => {
+      setRefreshButtonVisible(false);
+    });
+  }),
+    [];
+
+  useEffect(() => {
+    (async () => {
+      if (isLoading) {
+        const accessToken = await getAccessToken();
+        const eventsGeoJson = await getEventsGeoJson(accessToken);
+        setGeoJson(eventsGeoJson);
+
+        setIsLoading(false);
+      }
+    })();
   }, [isLoading]);
 
   return (
@@ -90,7 +110,7 @@ export default () => {
           />
           {geoJson?.features?.map((marker, index) => {
             // console.log(
-            //   BACKEND_EVENT_API_URL + 'event/' + marker.properties.id + '/icon',
+            //   BACKEND_EVENT_PUBLIC_API_URL + 'icon/' + marker.properties.icon,
             // );
             return (
               <MapLibreGL.ShapeSource
@@ -102,36 +122,38 @@ export default () => {
                   geometry: marker.geometry,
                 }}>
                 <MapLibreGL.SymbolLayer
-                  id={'marker' + index}
+                  id={'marker-' + index}
                   style={{
                     iconImage:
-                      BACKEND_EVENT_API_URL +
-                      'event/' +
-                      marker.properties.id +
-                      '/icon',
+                      BACKEND_EVENT_PUBLIC_API_URL +
+                      'icon/' +
+                      marker.properties.icon,
                     iconSize: 0.25,
+                    iconAllowOverlap: true,
                   }}
                 />
               </MapLibreGL.ShapeSource>
             );
           })}
         </MapLibreGL.MapView>
-        <Portal>
-          <View
-            style={{
-              marginTop: 'auto',
-              marginBottom: 100,
-              flexDirection: 'row',
-              justifyContent: 'center',
-            }}>
-            <Button
-              style={{backgroundColor: 'dimgray'}}
-              mode="contained"
-              onPress={() => setIsLoading(true)}>
-              Refresh
-            </Button>
-          </View>
-        </Portal>
+        {refreshButtonVisible && (
+          <Portal>
+            <View
+              style={{
+                marginTop: 'auto',
+                marginBottom: 100,
+                flexDirection: 'row',
+                justifyContent: 'center',
+              }}>
+              <Button
+                style={{backgroundColor: 'dimgray'}}
+                mode="contained"
+                onPress={() => setIsLoading(true)}>
+                Refresh
+              </Button>
+            </View>
+          </Portal>
+        )}
 
         <EventDetailsDialog
           visible={visible}

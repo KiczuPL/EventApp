@@ -4,7 +4,7 @@ import MapLibreGL from '@maplibre/maplibre-react-native';
 import * as config from '../../config/config';
 import {StyleSheet, View} from 'react-native';
 import {useCallback, useState} from 'react';
-import {Coordinates} from '../organisms/CreateEvent';
+import {Coordinates} from '../../features/events/ui/CreateEvent';
 
 MapLibreGL.setAccessToken(null);
 
@@ -66,7 +66,7 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
           }}
         />
         <MapLibreGL.ShapeSource
-          id={'marker-source'}
+          id={'marker-picker-source'}
           shape={{
             type: 'Feature',
             geometry: {
@@ -75,11 +75,11 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
             },
           }}>
           <MapLibreGL.SymbolLayer
-            id={'marker'}
+            id={'marker-picker'}
             style={{
               iconImage:
-                'https://www.jawg.io/docs/images/icons/eiffel-tower.png',
-              iconSize: 0.5,
+                'https://icon-library.com/images/map-marker-icon-free/map-marker-icon-free-12.jpg',
+              iconSize: 0.1,
             }}
           />
         </MapLibreGL.ShapeSource>

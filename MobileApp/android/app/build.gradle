@@ -97,6 +97,7 @@ android {
     namespace "com.mobileapp"
     defaultConfig {
         applicationId "com.mobileapp"
+        manifestPlaceholders = [auth0Domain: "dev-phlbwuivnwgq0kxl.us.auth0.com", auth0Scheme: "${applicationId}"]
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

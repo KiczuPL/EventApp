@@ -1,10 +1,21 @@
 import {useCallback, useState} from 'react';
 import {Image, TouchableOpacity, View} from 'react-native';
-import {Button, Modal, Portal, Text, TextInput} from 'react-native-paper';
+import {
+  Button,
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import {TimePickerModal, DatePickerModal} from 'react-native-paper-dates';
-import PlacePickerDialog from '../molecules/PlacePickerDialog';
-import PickEventIconDialog from '../molecules/PickEventIconDialog';
-import {BACKEND_EVENT_API_URL} from '../../features/events/api/constants';
+import PlacePickerDialog from '../../../components/molecules/PlacePickerDialog';
+import PickEventIconDialog from '../../../components/molecules/PickEventIconDialog';
+import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
+import NumericInput from 'react-native-numeric-input';
+import {useAuth0} from 'react-native-auth0';
+import {createNewEvent} from '../api/createEvent';
+import TimeZone from 'react-native-timezone';
 
 type createEventDialogProps = {
   visible: boolean;
@@ -26,10 +37,17 @@ export default ({visible, toggle}: createEventDialogProps) => {
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [placePickerVisible, setPlacePickerVisible] = useState(false);
   const [iconPickerVisible, setIconPickerVisible] = useState(false);
+
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [time, setTime] = useState<Time | undefined>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
   const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
   const [iconFilename, setIconFilename] = useState<string | undefined>();
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [time, setTime] = useState<Time | undefined>();
+  const [maxParticipants, setMaxParticipants] = useState<number>(2);
+  const {user} = useAuth0();
+
+  const {getCredentials} = useAuth0();
 
   const togglePlacePicker = useCallback(() => {
     setPlacePickerVisible(!placePickerVisible);
@@ -80,6 +98,55 @@ export default ({visible, toggle}: createEventDialogProps) => {
     [setDate, toggleDatePicker],
   );
 
+  const getAccessToken = async () => {
+    const credentials = await getCredentials();
+    return credentials.accessToken;
+  };
+
+  const onSubmit = useCallback(async () => {
+    const token = await getAccessToken();
+    console.log(date);
+    console.log(coordinates);
+    console.log(iconFilename);
+
+    if (date && coordinates && iconFilename) {
+      //const timeZone = RNLocalize.getTimeZone();
+
+      const getTimeZone = async () => {
+        const timeZone = await TimeZone.getTimeZone().then((zone: any) => zone);
+        return timeZone;
+      };
+      const timezone = await getTimeZone();
+      console.log(timezone);
+      console.log(title);
+      console.log(description);
+      await createNewEvent(
+        token,
+        user.sub?.slice(6),
+        title,
+        description,
+        date,
+        timezone,
+        coordinates.latitude,
+        coordinates.longitude,
+        iconFilename,
+        maxParticipants,
+      );
+      toggle();
+    }
+  }, [
+    title,
+    description,
+    date,
+    coordinates,
+    iconFilename,
+    maxParticipants,
+    toggle,
+    user.sub,
+  ]);
+
+  const theme = useTheme();
+
   const dateFormatter = new Intl.DateTimeFormat(undefined, {
     //TODO: useMemo????
     day: 'numeric',
@@ -103,12 +170,14 @@ export default ({visible, toggle}: createEventDialogProps) => {
           multiline={false}
           numberOfLines={2}
           style={{marginBottom: 20, borderRadius: 5}}
+          onChangeText={text => setTitle(text)}
         />
         <TextInput
           label="Description"
           multiline={true}
           numberOfLines={5}
           style={{marginBottom: 20, borderRadius: 5}}
+          onChangeText={text => setDescription(text)}
         />
         <View style={{flexDirection: 'row', paddingBottom: 10}}>
           <Button mode="contained" onPress={toggleTimePicker}>
@@ -132,7 +201,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
             <TouchableOpacity onPress={toggleIconPicker}>
               <Image
                 source={{
-                  uri: BACKEND_EVENT_API_URL + 'event/icons/' + iconFilename,
+                  uri: BACKEND_EVENT_PUBLIC_API_URL + 'icon/' + iconFilename,
                 }}
                 style={{width: 50, height: 50}}
               />
@@ -142,6 +211,20 @@ export default ({visible, toggle}: createEventDialogProps) => {
               Icon
             </Button>
           )}
+        </View>
+
+        <View style={{flexDirection: 'row', paddingBottom: 5}}>
+          <Text>Participants: </Text>
+        </View>
+        <View style={{flexDirection: 'row', paddingBottom: 10}}>
+          <NumericInput
+            onChange={value => setMaxParticipants(value)}
+            value={maxParticipants}
+            minValue={2}
+            rightButtonBackgroundColor={theme.colors.primary}
+            leftButtonBackgroundColor={theme.colors.primary}
+            rounded={true}
+          />
         </View>
       </View>
 
@@ -174,7 +257,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
         <Button mode="contained" onPress={toggle}>
           Cancel
         </Button>
-        <Button mode="contained" onPress={toggle}>
+        <Button mode="contained" onPress={onSubmit}>
           Create
         </Button>
       </View>

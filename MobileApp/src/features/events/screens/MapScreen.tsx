@@ -2,7 +2,7 @@ import MapLibreGL from '@maplibre/maplibre-react-native';
 import React from 'react';
 import {StyleSheet} from 'react-native';
 
-import EventMap from '../../../components/organisms/EventMap';
+import EventMap from '../ui/EventMap';
 
 MapLibreGL.setAccessToken(null);
 
