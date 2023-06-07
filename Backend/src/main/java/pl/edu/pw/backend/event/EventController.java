@@ -40,6 +40,18 @@ public class EventController {
         return eventService.addEvent(form);
     }
 
+    @PostMapping("/{id}/join")
+    public void joinEvent(@RequestParam String participantId, @PathVariable Long id){
+        System.out.println("AAAAAAAA");
+        eventService.assignUserToEvent(participantId,id);
+    }
+
+    @PostMapping("/{id}/join/cancel")
+    public void cancelJoinEvent(@RequestParam String participantId, @PathVariable Long id){
+        System.out.println("BBBBBBBBBBBB");
+        eventService.signOutUserFromEvent(participantId,id);
+    }
+
 
     @DeleteMapping
     public void deleteEvent(Long id) {

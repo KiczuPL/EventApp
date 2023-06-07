@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 import pl.edu.pw.backend.user.AppUser;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -42,6 +46,13 @@ public class Event {
 
     @NotNull
     private Integer maxParticipants;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<AppUser> participants = new HashSet<>();
+    @NotNull
+    @Builder.Default
+    private Integer participantsCount=0;
     @ManyToOne
     private AppUser owner;
 }

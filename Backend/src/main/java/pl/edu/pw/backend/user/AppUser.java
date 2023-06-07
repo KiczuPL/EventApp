@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Data
 @Builder
@@ -18,4 +20,9 @@ public class AppUser {
     private String id;
     @NotEmpty
     private String username;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

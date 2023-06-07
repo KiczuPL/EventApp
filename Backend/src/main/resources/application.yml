@@ -15,7 +15,7 @@ spring:
         jwt:
           issuer-uri: https://dev-phlbwuivnwgq0kxl.us.auth0.com/
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
       naming:

@@ -3,6 +3,7 @@ package pl.edu.pw.backend.event.projections;
 import pl.edu.pw.backend.user.projections.UserDTO;
 
 import java.time.ZonedDateTime;
+import java.util.Set;
 
 public interface ProjectEventDetails {
     Long getId();
@@ -18,7 +19,7 @@ public interface ProjectEventDetails {
     ZonedDateTime getStartDateTime();
 
     UserDTO getOwner();
-
-    Integer getMaxParticipants();
+    Set<UserDTO> getParticipants();
+    Integer getParticipantsCount();
 
 }

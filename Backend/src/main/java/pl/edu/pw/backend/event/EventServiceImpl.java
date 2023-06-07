@@ -38,8 +38,11 @@ public class EventServiceImpl implements EventService {
                 .iconFilename(form.iconFilename())
                 .maxParticipants(form.maxParticipants())
                 .build();
+        event.getParticipants().add(owner);
+        event.setParticipantsCount(1);
+        event = eventRepository.save(event);
         log.info("New event created: {}", event);
-        return eventRepository.save(event);
+        return event;
     }
 
     @Override
@@ -63,5 +66,27 @@ public class EventServiceImpl implements EventService {
     @Override
     public ProjectEventDetails getEventDetails(Long id) {
         return eventRepository.findProjectEventDetailsById(id);
+    }
+
+    @Override
+    public void assignUserToEvent(String participantId, Long eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow();
+        AppUser participant = userService.getUserById(participantId);
+        log.info("event: {}",event);
+        event.getParticipants().add(participant);
+        event.setParticipantsCount(event.getParticipantsCount() + 1);
+        eventRepository.save(event);
+        log.info("User {} assigned to event {}", participantId, eventId);
+    }
+
+    @Override
+    public void signOutUserFromEvent(String participantId, Long eventId) {
+        log.info("unassigning user {} from event {}", participantId, eventId);
+        Event event = eventRepository.findById(eventId).orElseThrow();
+        AppUser participant = userService.getUserById(participantId);
+        event.getParticipants().remove(participant);
+        event.setParticipantsCount(event.getParticipantsCount() - 1);
+        eventRepository.save(event);
+        log.info("User {} unassigned from event {}", participantId, eventId);
     }
 }
