@@ -1,13 +1,14 @@
 package pl.edu.pw.backend.user;
 
 import pl.edu.pw.backend.user.forms.CreateUserForm;
+import pl.edu.pw.backend.user.projections.UserDTO;
 
 import java.util.List;
 
 public interface UserService {
-    AppUser getUserById(Long id);
+    AppUser getUserById(String id);
 
     List<AppUser> getAllUsers();
 
-    AppUser addUser(CreateUserForm createUserForm);
+    UserDTO getUserData(CreateUserForm form);
 }

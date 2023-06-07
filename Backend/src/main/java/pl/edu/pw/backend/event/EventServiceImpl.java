@@ -11,6 +11,7 @@ import pl.edu.pw.backend.event.projections.ProjectIdLatitudeLongitudeIconFilenam
 import pl.edu.pw.backend.user.AppUser;
 import pl.edu.pw.backend.user.UserService;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -23,16 +24,19 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event addEvent(CreateEventForm form) {
+        log.warn("Form: {}", form);
         AppUser owner = userService.getUserById(form.ownerId());
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(form.startDatetime(), ZoneId.of(form.timeZoneId()));
         Event event = Event.builder()
                 .owner(owner)
                 .title(form.title())
                 .description(form.description())
                 .longitude(form.longitude())
                 .latitude(form.latitude())
-                .startDateTime(form.startDatetime())
+                .startDateTime(zonedDateTime)
                 .creationDateTime(ZonedDateTime.now())
                 .iconFilename(form.iconFilename())
+                .maxParticipants(form.maxParticipants())
                 .build();
         log.info("New event created: {}", event);
         return eventRepository.save(event);

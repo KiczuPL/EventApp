@@ -39,6 +39,9 @@ public class Event {
 
     @NotBlank
     private String iconFilename;
+
+    @NotNull
+    private Integer maxParticipants;
     @ManyToOne
     private AppUser owner;
 }

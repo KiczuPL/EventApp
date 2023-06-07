@@ -1,6 +1,6 @@
 app:
   cors:
-    allowed-origins: http://10.147.20.2
+    allowed-origins: http://10.147.20.1:80
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/event_app

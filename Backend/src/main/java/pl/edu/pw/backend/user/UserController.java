@@ -6,15 +6,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.pw.backend.user.forms.CreateUserForm;
+import pl.edu.pw.backend.user.projections.UserDTO;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/private/user")
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
-    private AppUser addUser(@RequestBody CreateUserForm form) {
-        return userService.addUser(form);
+    @PostMapping("/firstlogin")
+    private UserDTO login(@RequestBody CreateUserForm form) {
+        return userService.getUserData(form);
     }
 }

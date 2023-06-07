@@ -35,6 +35,11 @@ public class EventController {
         return eventService.getAllEventsGeoJson();
     }
 
+    @PostMapping("/create")
+    public Event createEvent(@RequestBody CreateEventForm form) {
+        return eventService.addEvent(form);
+    }
+
 
     @DeleteMapping
     public void deleteEvent(Long id) {
