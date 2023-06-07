@@ -11,6 +11,8 @@ import {useCallback, useEffect, useState} from 'react';
 import {useAuth0} from 'react-native-auth0';
 import {getEventDetails} from '../api/getEventDetails';
 import DeviceInfo from 'react-native-device-info';
+import {joinEvent} from '../api/joinEvent';
+import {cancelJoinEvent} from '../api/cancelJoinEvent';
 
 export type EventDetailsDialogProps = {
   visible: boolean;
@@ -18,22 +20,24 @@ export type EventDetailsDialogProps = {
   event: SingleEventMapGeoJson;
 };
 
-export type EventDetails = {
+type Participant = {
   id: string;
+  username: string;
+};
+
+export type EventDetails = {
+  id: number;
   title: string;
-  owner: EventOwner;
+  owner: Participant;
   description: string;
   startDateTime: string;
-};
-type EventOwner = {
-  id: number;
-  username: string;
+  participants: Participant[];
 };
 
 export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
   const [details, setDetails] = useState<EventDetails>();
   const [isLoading, setIsLoading] = useState(true);
-  const {getCredentials} = useAuth0();
+  const {getCredentials, user} = useAuth0();
 
   const timeFormatter = new Intl.DateTimeFormat(undefined, {
     day: 'numeric',
@@ -64,6 +68,22 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
     }
   }, [isLoading]);
 
+  const handleCancelJoin = useCallback(async () => {
+    if (details) {
+      const token = await getAccessToken();
+      await cancelJoinEvent(token, user.sub.slice(6), details.id);
+      fetchEventDetails();
+    }
+  }, [event, details, user]);
+
+  const handleJoin = useCallback(async () => {
+    if (details) {
+      const token = await getAccessToken();
+      await joinEvent(token, user.sub.slice(6), details.id);
+      fetchEventDetails();
+    }
+  }, [event, details, user]);
+
   useEffect(() => {
     //TODO: Verify which way to fetch event details is better
     setIsLoading(true);
@@ -92,9 +112,18 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
             <Button mode="contained" onPress={toggleDialog}>
               Close
             </Button>
-            <Button mode="contained" onPress={toggleDialog}>
-              Ask to join
-            </Button>
+            {details?.owner?.id ===
+            user.sub.slice(6) ? null : details.participants.filter(
+                p => p.id === user.sub.slice(6),
+              ).length > 0 ? (
+              <Button mode="contained" onPress={handleCancelJoin}>
+                Cancel join
+              </Button>
+            ) : (
+              <Button mode="contained" onPress={handleJoin}>
+                Ask to join
+              </Button>
+            )}
           </View>
         </>
       ) : (

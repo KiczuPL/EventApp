@@ -7,7 +7,7 @@ import * as config from '../../../config/config';
 import EventDetailsDialog from './EventDetailsDialog';
 import {getEventsGeoJson} from '../api/getEventsGeoJson';
 import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
-import {Button, Portal} from 'react-native-paper';
+import {Button, Portal, useTheme} from 'react-native-paper';
 import {useAuth0} from 'react-native-auth0';
 import {useNavigation} from '@react-navigation/native';
 
@@ -58,6 +58,7 @@ export default () => {
 
   const navigation = useNavigation();
   const {getCredentials} = useAuth0();
+  const theme = useTheme();
 
   const toggleDialog = () => setVisible(!visible);
 
@@ -146,7 +147,7 @@ export default () => {
                 justifyContent: 'center',
               }}>
               <Button
-                style={{backgroundColor: 'dimgray'}}
+                style={{backgroundColor: theme.colors.secondary}}
                 mode="contained"
                 onPress={() => setIsLoading(true)}>
                 Refresh

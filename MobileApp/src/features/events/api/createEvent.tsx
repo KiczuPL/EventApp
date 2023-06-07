@@ -13,20 +13,20 @@ export const createNewEvent = async (
   iconFilename: string,
   maxParticipants: number,
 ) => {
-  console.log(
-    'send: ' +
-      JSON.stringify({
-        ownerId: ownerId,
-        title: title,
-        description: description,
-        startDatetime: startDateTime,
-        timeZoneId: timeZone,
-        longitude: longitude,
-        latitude: latitude,
-        iconFilename: iconFilename,
-        maxParticipants: maxParticipants,
-      }),
-  );
+  // console.log(
+  //   'send: ' +
+  //     JSON.stringify({
+  //       ownerId: ownerId,
+  //       title: title,
+  //       description: description,
+  //       startDatetime: startDateTime,
+  //       timeZoneId: timeZone,
+  //       longitude: longitude,
+  //       latitude: latitude,
+  //       iconFilename: iconFilename,
+  //       maxParticipants: maxParticipants,
+  //     }),
+  // );
   return axios
     .post(
       BACKEND_EVENT_PRIVATE_API_URL + 'event/create',
