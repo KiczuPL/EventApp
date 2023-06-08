@@ -4,31 +4,21 @@ import MapLibreGL from '@maplibre/maplibre-react-native';
 
 import * as config from '../../../config/config';
 
-import EventDetailsDialog from './EventDetailsDialog';
+import EventDetailsDialog from './MapEventDetailsDialog';
 import {getEventsGeoJson} from '../api/getEventsGeoJson';
 import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
-import {Button, Portal, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Button,
+  Portal,
+  Text,
+  useTheme,
+} from 'react-native-paper';
 import {useAuth0} from 'react-native-auth0';
 import {useNavigation} from '@react-navigation/native';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 
 MapLibreGL.setAccessToken(null);
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  container: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'white',
-  },
-  map: {
-    flex: 1,
-  },
-});
 
 export interface EventMapGeoJson {
   type: string;
@@ -94,6 +84,36 @@ export default () => {
     })();
   }, [isLoading]);
 
+  const styles = StyleSheet.create({
+    page: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#F5FCFF',
+    },
+    container: {
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'white',
+    },
+    map: {
+      flex: 1,
+    },
+    refreshButton: {
+      backgroundColor: theme.colors.secondary,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      alignItems: 'center',
+      padding: 10,
+      height: 50,
+      width: 100,
+      borderWidth: 1,
+      borderColor: '#666',
+      borderRadius: 20,
+    },
+  });
+
   return (
     <View style={styles.page}>
       <View style={styles.container}>
@@ -116,6 +136,7 @@ export default () => {
             return (
               <MapLibreGL.ShapeSource
                 id={'marker-source-' + index}
+                key={'marker-source-' + index}
                 onPress={() => handleMarkerPress(marker)}
                 cluster={true}
                 shape={{
@@ -124,6 +145,7 @@ export default () => {
                 }}>
                 <MapLibreGL.SymbolLayer
                   id={'marker-' + index}
+                  key={'marker-' + index}
                   style={{
                     iconImage:
                       BACKEND_EVENT_PUBLIC_API_URL +
@@ -149,6 +171,7 @@ export default () => {
               <Button
                 style={{backgroundColor: theme.colors.secondary}}
                 mode="contained"
+                disabled={isLoading}
                 onPress={() => setIsLoading(true)}>
                 Refresh
               </Button>

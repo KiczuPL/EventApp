@@ -1,4 +1,4 @@
-import {Button, Modal, Portal, Text} from 'react-native-paper';
+import {Button, Modal, Portal, Text, useTheme} from 'react-native-paper';
 import MapLibreGL from '@maplibre/maplibre-react-native';
 
 import * as config from '../../config/config';
@@ -31,6 +31,7 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
   const [coordinates, setCoordinates] = useState<number[]>([
     2.3210938, 48.8565913,
   ]);
+  const theme = useTheme();
 
   const handleClick = useCallback(
     (cords: number[]) => {
@@ -93,7 +94,7 @@ export default ({visible, toggle, setTargetCoordinates}: placePickerProps) => {
             justifyContent: 'center',
           }}>
           <Button
-            style={{backgroundColor: 'dimgray'}}
+            style={{backgroundColor: theme.colors.secondary}}
             mode="contained"
             onPress={toggle}>
             Pick place

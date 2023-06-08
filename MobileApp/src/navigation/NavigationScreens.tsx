@@ -9,12 +9,15 @@ import LoginScreen from '../screens/LoginScreen';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useAuth0} from 'react-native-auth0';
 import {ActivityIndicator, Text} from 'react-native-paper';
-import {firstLogin} from '../features/events/auth/api/loginRequest';
+import {firstLogin} from '../features/auth/api/loginRequest';
 import {View} from 'react-native';
+import EventList from '../features/events/ui/EventList';
+import {createStackNavigator} from '@react-navigation/stack';
 
 export default () => {
   const {user, isLoading, getCredentials} = useAuth0();
   const Tab = createMaterialBottomTabNavigator();
+  const Stack = createStackNavigator();
   const getAccessToken = async () => {
     const credentials = await getCredentials();
     return credentials.accessToken;
@@ -36,7 +39,11 @@ export default () => {
           <ActivityIndicator animating={true} size="large" />
         </View>
       ) : user ? (
-        <Tab.Navigator>
+        <Tab.Navigator
+          initialRouteName="Home"
+          shifting={true}
+          sceneAnimationEnabled={true}
+          sceneAnimationType="shifting">
           <Tab.Screen
             name="Map"
             component={MapScreen}
@@ -46,11 +53,24 @@ export default () => {
           />
           <Tab.Screen
             name="Home"
-            component={HomeScreen}
             options={{
               tabBarIcon: ({color}) => <Icon name="home" size={30} />,
-            }}
-          />
+            }}>
+            {() => (
+              <Stack.Navigator initialRouteName="Dashboard">
+                <Stack.Screen
+                  options={{headerShown: false}}
+                  name="Dashboard"
+                  component={HomeScreen}
+                />
+                <Stack.Screen
+                  options={{title: 'Your Events'}}
+                  name="EventList"
+                  component={EventList}
+                />
+              </Stack.Navigator>
+            )}
+          </Tab.Screen>
           <Tab.Screen
             name="Chats"
             component={ChatScreen}

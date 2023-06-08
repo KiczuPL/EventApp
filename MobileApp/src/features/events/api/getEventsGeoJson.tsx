@@ -6,6 +6,7 @@ type GetEventsGeoJson = (token: string) => Promise<EventMapGeoJson>;
 
 export const getEventsGeoJson: GetEventsGeoJson = async (token: string) => {
   console.log('CALL for geojson');
+  console.log(token);
   return axios
     .get<EventMapGeoJson>(BACKEND_EVENT_PRIVATE_API_URL + 'event/geoJson', {
       headers: {

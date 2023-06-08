@@ -25,10 +25,7 @@ export default () => {
   return (
     <View style={styles.container}>
       <Button mode="contained" onPress={onPress}>
-        Login with Auth0s
-      </Button>
-      <Button mode="contained" onPress={print}>
-        print
+        Login with Auth0
       </Button>
     </View>
   );

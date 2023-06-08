@@ -32,6 +32,8 @@ export type EventDetails = {
   description: string;
   startDateTime: string;
   participants: Participant[];
+  participantsCount: number;
+  maxParticipants: number;
 };
 
 export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
@@ -104,9 +106,20 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
               justifyContent: 'space-between',
               paddingBottom: 20,
             }}>
+            <Text variant="titleMedium">Description:</Text>
             <Text>{details?.description}</Text>
+            <Text variant="titleMedium">When:</Text>
             <Text>{timeFormatter.format(new Date(details.startDateTime))}</Text>
-            <Text>Created by: {details?.owner?.username}</Text>
+            <Text variant="titleMedium">Participants:</Text>
+            <Text>
+              {details?.participantsCount}/{details?.maxParticipants}
+            </Text>
+            <Text variant="titleMedium">Created by:</Text>
+            <Text>
+              {details?.owner.username === user.nickname
+                ? 'You'
+                : details?.owner.username}
+            </Text>
           </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Button mode="contained" onPress={toggleDialog}>
@@ -121,7 +134,7 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
               </Button>
             ) : (
               <Button mode="contained" onPress={handleJoin}>
-                Ask to join
+                Join event
               </Button>
             )}
           </View>

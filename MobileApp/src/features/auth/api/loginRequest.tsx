@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {BACKEND_EVENT_PRIVATE_API_URL} from '../../api/constants';
+import {BACKEND_EVENT_PRIVATE_API_URL} from '../../events/api/constants';
 
 export const firstLogin = async (
   token: string,

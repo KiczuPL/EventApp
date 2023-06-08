@@ -122,7 +122,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
       console.log(description);
       await createNewEvent(
         token,
-        user.sub?.slice(6),
+        user?.sub?.slice(6),
         title,
         description,
         date,
@@ -142,7 +142,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
     iconFilename,
     maxParticipants,
     toggle,
-    user.sub,
+    user,
   ]);
 
   const theme = useTheme();

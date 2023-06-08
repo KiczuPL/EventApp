@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {BACKEND_EVENT_PRIVATE_API_URL} from './constants';
 import {SingleEventMapGeoJson} from '../ui/EventMap';
-import {EventDetails} from '../ui/EventDetailsDialog';
+import {EventDetails} from '../ui/MapEventDetailsDialog';
 
 export type GetEventDetails = (
   token: string,
