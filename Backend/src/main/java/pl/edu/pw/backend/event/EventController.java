@@ -50,8 +50,9 @@ public class EventController {
         eventService.signOutUserFromEvent(participantId, id);
     }
 
-    @DeleteMapping
-    public void deleteEvent(Long id) {
+    @DeleteMapping("/{id}")
+    public void deleteEvent(@PathVariable  Long id) {
+        System.out.println(id);
         eventService.deleteEvent(id);
     }
 }

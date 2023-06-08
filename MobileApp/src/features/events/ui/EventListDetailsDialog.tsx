@@ -14,17 +14,24 @@ import {
 import {View} from 'react-native';
 import {cancelJoinEvent} from '../api/cancelJoinEvent';
 import {getEventDetails} from '../api/getEventDetails';
+import {cancelEvent} from '../api/cancelEvent';
 
 export type EventDetailsDialogProps = {
   visible: boolean;
   toggleDialog: () => void;
   event: Event | undefined;
+  reloadList: () => void;
 };
 
 type EventDetails = {};
 
 //TODO: modal z informacjami o evencie, ale bardziej bogatym, np dokładna listea uczestników
-export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
+export default ({
+  visible,
+  toggleDialog,
+  event,
+  reloadList,
+}: EventDetailsDialogProps) => {
   const [details, setDetails] = useState<Event>();
   const [isLoading, setIsLoading] = useState(true);
   const {getCredentials, user} = useAuth0();
@@ -78,7 +85,7 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
     if (details) {
       const token = await getAccessToken();
       await cancelEvent(token, details.id);
-      fetchEventDetails();
+      reloadList();
       toggleDialog();
     }
   }, [event, details, user]);
@@ -173,7 +180,7 @@ export default ({visible, toggleDialog, event}: EventDetailsDialogProps) => {
                 paddingHorizontal: 20,
               }}
               mode="contained"
-              onPress={toggleConfirmDeleteDialog}>
+              onPress={handleCancelEvent}>
               Delete
             </Button>
           </Dialog.Actions>

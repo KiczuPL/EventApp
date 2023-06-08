@@ -128,6 +128,7 @@ export default () => {
         visible={detailsDialogVisible}
         toggleDialog={toggleDetailsDialog}
         event={selectedEvent}
+        reloadList={() => setIsLoading(true)}
       />
     </View>
   );
