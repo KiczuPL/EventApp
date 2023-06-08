@@ -19,7 +19,9 @@ public interface ProjectEventDetails {
     ZonedDateTime getStartDateTime();
 
     UserDTO getOwner();
+
     Set<UserDTO> getParticipants();
+
     Integer getParticipantsCount();
 
 }

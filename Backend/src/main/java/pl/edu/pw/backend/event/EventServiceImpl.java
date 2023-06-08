@@ -72,7 +72,7 @@ public class EventServiceImpl implements EventService {
     public void assignUserToEvent(String participantId, Long eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow();
         AppUser participant = userService.getUserById(participantId);
-        log.info("event: {}",event);
+        log.info("event: {}", event);
         event.getParticipants().add(participant);
         event.setParticipantsCount(event.getParticipantsCount() + 1);
         eventRepository.save(event);
