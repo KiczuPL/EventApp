@@ -24,4 +24,6 @@ public interface ProjectEventDetails {
 
     Integer getParticipantsCount();
 
+    Integer getMaxParticipants();
+
 }

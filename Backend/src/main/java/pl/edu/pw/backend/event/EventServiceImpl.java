@@ -65,7 +65,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public ProjectEventDetails getEventDetails(Long id) {
-        return eventRepository.findProjectEventDetailsById(id);
+        ProjectEventDetails event = eventRepository.findProjectEventDetailsById(id);
+        log.info("Getting event details: {}", event);
+        return event;
     }
 
     @Override

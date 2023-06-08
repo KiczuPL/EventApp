@@ -9,7 +9,7 @@ public interface EventDTO {
 
     String getTitle();
 
-    String Description();
+    String getDescription();
 
     Double getLongitude();
 
