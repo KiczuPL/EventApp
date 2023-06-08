@@ -1,5 +1,6 @@
 package pl.edu.pw.backend.user;
 
+import pl.edu.pw.backend.event.dto.EventDTO;
 import pl.edu.pw.backend.user.forms.CreateUserForm;
 import pl.edu.pw.backend.user.projections.UserDTO;
 
@@ -11,4 +12,6 @@ public interface UserService {
     List<AppUser> getAllUsers();
 
     UserDTO getUserData(CreateUserForm form);
+
+    List<EventDTO> getUserEvents(String id);
 }

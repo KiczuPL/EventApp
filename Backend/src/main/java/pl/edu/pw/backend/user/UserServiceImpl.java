@@ -3,6 +3,7 @@ package pl.edu.pw.backend.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.edu.pw.backend.event.dto.EventDTO;
 import pl.edu.pw.backend.user.forms.CreateUserForm;
 import pl.edu.pw.backend.user.projections.UserDTO;
 
@@ -64,5 +65,11 @@ public class UserServiceImpl implements UserService {
                 return newUser.getUsername();
             }
         };
+    }
+
+    @Override
+    public List<EventDTO> getUserEvents(String id) {
+        List<EventDTO> events = userRepository.findUserEvents(id);
+        return events;//userRepository.findDistinctEventsById(id);
     }
 }
