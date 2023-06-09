@@ -117,6 +117,7 @@ export default () => {
           <CreateEvent
             visible={createEventDialogVisible}
             toggle={toggleCreateEventDialog}
+            mode="create"
           />
         </Portal>
       </View>

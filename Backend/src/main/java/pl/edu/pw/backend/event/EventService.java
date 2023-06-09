@@ -22,4 +22,6 @@ public interface EventService {
     void assignUserToEvent(String participantId, Long eventId);
 
     void signOutUserFromEvent(String participantId, Long id);
+
+    Event updateEvent(CreateEventForm form);
 }

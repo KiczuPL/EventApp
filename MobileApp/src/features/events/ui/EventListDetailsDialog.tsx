@@ -15,6 +15,7 @@ import {View} from 'react-native';
 import {cancelJoinEvent} from '../api/cancelJoinEvent';
 import {getEventDetails} from '../api/getEventDetails';
 import {cancelEvent} from '../api/cancelEvent';
+import CreateEvent from './CreateEvent';
 
 export type EventDetailsDialogProps = {
   visible: boolean;
@@ -23,20 +24,39 @@ export type EventDetailsDialogProps = {
   reloadList: () => void;
 };
 
-type EventDetails = {};
+type Participant = {
+  id: string;
+  username: string;
+};
 
-//TODO: modal z informacjami o evencie, ale bardziej bogatym, np dokładna listea uczestników
+export type EventDetails = {
+  id: number;
+  title: string;
+  owner: Participant;
+  description: string;
+  startDateTime: string;
+  participants: Participant[];
+  participantsCount: number;
+  maxParticipants: number;
+  iconFilename: string;
+  latitude: number;
+  longitude: number;
+};
+
 export default ({
   visible,
   toggleDialog,
   event,
   reloadList,
 }: EventDetailsDialogProps) => {
-  const [details, setDetails] = useState<Event>();
+  const [details, setDetails] = useState<EventDetails | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const {getCredentials, user} = useAuth0();
   const [confirmDeleteDialogVisible, setCreateEventDialogVisible] =
     useState(false);
+  const [editEventDialogVisible, setEditEventDialogVisible] =
+    useState<boolean>(false);
+
   const theme = useTheme();
 
   const timeFormatter = new Intl.DateTimeFormat(undefined, {
@@ -47,6 +67,15 @@ export default ({
     minute: '2-digit',
     hour12: false,
   });
+
+  const toggleEditEventDialog = useCallback(() => {
+    if (editEventDialogVisible) {
+      setDetails(undefined);
+      setIsLoading(true);
+      reloadList();
+    }
+    setEditEventDialogVisible(!editEventDialogVisible);
+  }, [editEventDialogVisible, setEditEventDialogVisible]);
 
   const toggleConfirmDeleteDialog = useCallback(() => {
     setCreateEventDialogVisible(!confirmDeleteDialogVisible);
@@ -62,6 +91,7 @@ export default ({
       const token = await getAccessToken();
       const det = await getEventDetails(token, event.id);
       setDetails(det);
+      console.log(`Details: ${JSON.stringify(det)}`);
     }
   }, [event, setDetails]);
 
@@ -96,7 +126,7 @@ export default ({
     //setDetails(undefined);
     fetchEventDetails();
   }, [event, visible]);
-  console.log(event);
+  console.log(`Deteils: ${JSON.stringify(details)}`);
   return (
     <Modal
       onDismiss={toggleDialog}
@@ -104,7 +134,7 @@ export default ({
       contentContainerStyle={{backgroundColor: 'white', padding: 20}}>
       {details ? (
         <>
-          <Title>{event?.title}</Title>
+          <Title>{details?.title}</Title>
           <View
             style={{
               flexDirection: 'column',
@@ -140,7 +170,7 @@ export default ({
                 <Button mode="contained" onPress={toggleConfirmDeleteDialog}>
                   Cancel
                 </Button>
-                <Button mode="contained" onPress={toggleConfirmDeleteDialog}>
+                <Button mode="contained" onPress={toggleEditEventDialog}>
                   Edit
                 </Button>
               </>
@@ -185,6 +215,22 @@ export default ({
             </Button>
           </Dialog.Actions>
         </Dialog>
+      </Portal>
+      <Portal>
+        <CreateEvent
+          key={details?.id}
+          visible={editEventDialogVisible}
+          toggle={toggleEditEventDialog}
+          eventId={details?.id}
+          initialTitle={details?.title}
+          initialDescription={details?.description}
+          initialDate={details?.startDateTime}
+          initialIconFilename={details?.iconFilename}
+          initialLatitude={details?.latitude}
+          initialLongitude={details?.longitude}
+          initialMaxParticipants={details?.maxParticipants}
+          mode="edit"
+        />
       </Portal>
     </Modal>
   );

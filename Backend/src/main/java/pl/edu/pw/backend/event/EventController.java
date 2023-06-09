@@ -40,6 +40,11 @@ public class EventController {
         return eventService.addEvent(form);
     }
 
+    @PutMapping("/update")
+    public Event updateEvent(@RequestBody CreateEventForm form) {
+        return eventService.updateEvent(form);
+    }
+
     @PostMapping("/{id}/join")
     public void joinEvent(@RequestParam String participantId, @PathVariable Long id) {
         eventService.assignUserToEvent(participantId, id);

@@ -5,7 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public record CreateEventForm(@NotEmpty String title,
+public record CreateEventForm(Long id,
+                              @NotEmpty String title,
                               @NotEmpty String description,
                               @NotNull LocalDateTime startDatetime,
                               @NotNull String timeZoneId,

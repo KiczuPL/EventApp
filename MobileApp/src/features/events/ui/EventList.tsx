@@ -12,6 +12,7 @@ import getUserEvents from '../api/getUserEvents';
 import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
 import {ScrollView} from 'react-native-gesture-handler';
 import EventListDetailsDialog from './EventListDetailsDialog';
+import CreateEvent from './CreateEvent';
 
 export type Event = {
   participants: {
@@ -38,6 +39,7 @@ export default () => {
   const [selectedEvent, setSelectedEvent] = useState<Event | undefined>(
     undefined,
   );
+
   const theme = useTheme();
   const getAccessToken = async () => {
     const credentials = await getCredentials();
@@ -125,6 +127,7 @@ export default () => {
         </ScrollView>
       )}
       <EventListDetailsDialog
+        key={selectedEvent?.id}
         visible={detailsDialogVisible}
         toggleDialog={toggleDetailsDialog}
         event={selectedEvent}

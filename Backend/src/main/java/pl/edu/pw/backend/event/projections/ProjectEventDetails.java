@@ -16,6 +16,8 @@ public interface ProjectEventDetails {
 
     Double getLongitude();
 
+    String getIconFilename();
+
     ZonedDateTime getStartDateTime();
 
     UserDTO getOwner();

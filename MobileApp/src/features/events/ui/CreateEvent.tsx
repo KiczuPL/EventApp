@@ -16,10 +16,20 @@ import NumericInput from 'react-native-numeric-input';
 import {useAuth0} from 'react-native-auth0';
 import {createNewEvent} from '../api/createEvent';
 import TimeZone from 'react-native-timezone';
+import {updateEvent} from '../api/updateEvent';
 
 type createEventDialogProps = {
   visible: boolean;
   toggle: () => void;
+  mode: string;
+  eventId?: number;
+  initialTitle?: string;
+  initialDescription?: string;
+  initialDate?: string | undefined;
+  initialLatitude?: number;
+  initialLongitude?: number;
+  initialIconFilename?: string;
+  initialMaxParticipants?: number;
 };
 
 type Time = {
@@ -32,20 +42,46 @@ export type Coordinates = {
   latitude: number;
 };
 
-export default ({visible, toggle}: createEventDialogProps) => {
+export default ({
+  visible,
+  toggle,
+  mode,
+  eventId,
+  initialTitle,
+  initialDescription,
+  initialDate,
+  initialLatitude,
+  initialLongitude,
+  initialIconFilename,
+  initialMaxParticipants,
+}: createEventDialogProps) => {
   const [datePickerVisible, setDatePickererVisible] = useState(false);
   const [timePickerVisible, setTimePickerVisible] = useState(false);
   const [placePickerVisible, setPlacePickerVisible] = useState(false);
   const [iconPickerVisible, setIconPickerVisible] = useState(false);
-
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [time, setTime] = useState<Time | undefined>();
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
-  const [iconFilename, setIconFilename] = useState<string | undefined>();
-  const [maxParticipants, setMaxParticipants] = useState<number>(2);
   const {user} = useAuth0();
+
+  const [title, setTitle] = useState(initialTitle ? initialTitle : '');
+  const [description, setDescription] = useState(
+    initialDescription ? initialDescription : '',
+  );
+  const [date, setDate] = useState<Date | undefined>(
+    initialDate ? new Date(initialDate) : new Date(),
+  );
+
+  const [coordinates, setCoordinates] = useState<Coordinates | undefined>(
+    initialLatitude && initialLongitude
+      ? {latitude: initialLatitude, longitude: initialLongitude}
+      : undefined,
+  );
+
+  const [iconFilename, setIconFilename] = useState<string | undefined>(
+    initialIconFilename ? initialIconFilename : undefined,
+  );
+
+  const [maxParticipants, setMaxParticipants] = useState<number>(
+    initialMaxParticipants ? initialMaxParticipants : 2,
+  );
 
   const {getCredentials} = useAuth0();
 
@@ -84,7 +120,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
       toggleTimePicker();
       //console.log(date);
     },
-    [setTime, setDate, toggleTimePicker],
+    [date, setDate, toggleTimePicker],
   );
 
   const pickDate = useCallback(
@@ -110,8 +146,6 @@ export default ({visible, toggle}: createEventDialogProps) => {
     console.log(iconFilename);
 
     if (date && coordinates && iconFilename) {
-      //const timeZone = RNLocalize.getTimeZone();
-
       const getTimeZone = async () => {
         const timeZone = await TimeZone.getTimeZone().then((zone: any) => zone);
         return timeZone;
@@ -120,18 +154,34 @@ export default ({visible, toggle}: createEventDialogProps) => {
       console.log(timezone);
       console.log(title);
       console.log(description);
-      await createNewEvent(
-        token,
-        user?.sub?.slice(6),
-        title,
-        description,
-        date,
-        timezone,
-        coordinates.latitude,
-        coordinates.longitude,
-        iconFilename,
-        maxParticipants,
-      );
+      if (mode === 'create') {
+        await createNewEvent(
+          token,
+          user?.sub?.slice(6),
+          title,
+          description,
+          date,
+          timezone,
+          coordinates.latitude,
+          coordinates.longitude,
+          iconFilename,
+          maxParticipants,
+        );
+      } else if (mode === 'edit') {
+        await updateEvent(
+          token,
+          eventId,
+          user?.sub?.slice(6),
+          title,
+          description,
+          date,
+          timezone,
+          coordinates.latitude,
+          coordinates.longitude,
+          iconFilename,
+          maxParticipants,
+        );
+      }
       toggle();
     }
   }, [
@@ -159,6 +209,13 @@ export default ({visible, toggle}: createEventDialogProps) => {
     hour12: false,
   });
 
+  console.log(`title: ${title}`);
+  console.log(`description: ${description}`);
+  console.log(`date: ${date}`);
+  console.log(`coordinates: ${coordinates}`);
+  console.log(`initialIconFilename: ${initialIconFilename}`);
+  console.log(`iconFilename: ${iconFilename}`);
+
   return (
     <Modal
       visible={visible}
@@ -167,6 +224,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
       <View style={{paddingBottom: 20}}>
         <TextInput
           label="Title"
+          value={title}
           multiline={false}
           numberOfLines={2}
           style={{marginBottom: 20, borderRadius: 5}}
@@ -174,6 +232,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
         />
         <TextInput
           label="Description"
+          value={description}
           multiline={true}
           numberOfLines={5}
           style={{marginBottom: 20, borderRadius: 5}}
@@ -181,7 +240,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
         />
         <View style={{flexDirection: 'row', paddingBottom: 10}}>
           <Button mode="contained" onPress={toggleTimePicker}>
-            {date?.getHours() ? timeFormatter.format(date) : 'Time'}
+            {date && date?.getHours() ? timeFormatter.format(date) : 'Time'}
           </Button>
         </View>
         <View style={{flexDirection: 'row', paddingBottom: 10}}>
@@ -258,7 +317,7 @@ export default ({visible, toggle}: createEventDialogProps) => {
           Cancel
         </Button>
         <Button mode="contained" onPress={onSubmit}>
-          Create
+          {mode === 'create' ? 'Create' : 'Update'}
         </Button>
       </View>
     </Modal>

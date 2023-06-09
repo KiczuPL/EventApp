@@ -24,7 +24,6 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event addEvent(CreateEventForm form) {
-        log.warn("Form: {}", form);
         AppUser owner = userService.getUserById(form.ownerId());
         ZonedDateTime zonedDateTime = ZonedDateTime.of(form.startDatetime(), ZoneId.of(form.timeZoneId()));
         Event event = Event.builder()
@@ -92,5 +91,22 @@ public class EventServiceImpl implements EventService {
         event.setParticipantsCount(event.getParticipantsCount() - 1);
         eventRepository.save(event);
         log.info("User {} unassigned from event {}", participantId, eventId);
+    }
+
+    @Override
+    public Event updateEvent(CreateEventForm form) {
+        AppUser owner = userService.getUserById(form.ownerId());
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(form.startDatetime(), ZoneId.of(form.timeZoneId()));
+        Event event = eventRepository.getReferenceById(form.id());
+        event.setTitle(form.title());
+        event.setDescription(form.description());
+        event.setStartDateTime(zonedDateTime);
+        event.setLongitude(form.longitude());
+        event.setLatitude(form.latitude());
+        event.setIconFilename(form.iconFilename());
+        event.setMaxParticipants(form.maxParticipants());
+
+        log.info("Event updated: {}", event);
+        return eventRepository.save(event);
     }
 }
