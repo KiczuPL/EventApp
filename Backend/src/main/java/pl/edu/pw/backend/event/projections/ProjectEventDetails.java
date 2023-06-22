@@ -24,6 +24,8 @@ public interface ProjectEventDetails {
 
     Set<UserDTO> getParticipants();
 
+    Long getChatId();
+
     Integer getParticipantsCount();
 
     Integer getMaxParticipants();

@@ -25,5 +25,7 @@ public interface EventDTO {
 
     Integer getParticipantsCount();
 
+    Long getChatId();
+
     UserDTO getOwner();
 }

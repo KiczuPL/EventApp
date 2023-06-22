@@ -31,10 +31,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().and().authorizeHttpRequests()
-                //.requestMatchers("/**").permitAll()
+                .requestMatchers("/**").permitAll()
                 .dispatcherTypeMatchers(FORWARD, ERROR).permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/private/**").authenticated()
+//                .requestMatchers("/api/public/**").permitAll()
+//                .requestMatchers("/api/private/**").authenticated()
                 .and().oauth2ResourceServer().jwt();
         return http.build();
     }

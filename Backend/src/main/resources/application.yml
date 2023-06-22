@@ -2,6 +2,10 @@ app:
   cors:
     allowed-origins: http://10.147.20.1:80
 spring:
+  devtools:
+    restart:
+      poll-interval: 2s
+      quiet-period: 1s
   datasource:
     url: jdbc:postgresql://localhost:5432/event_app
     username: app

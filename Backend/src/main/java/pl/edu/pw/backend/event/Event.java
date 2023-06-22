@@ -36,6 +36,9 @@ public class Event {
     private ZonedDateTime startDateTime;
 
     @NotNull
+    private Long chatId;
+
+    @NotNull
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ZonedDateTime creationDateTime;
 

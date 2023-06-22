@@ -3,6 +3,7 @@ package pl.edu.pw.backend.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.edu.pw.backend.chat.ChatRoomService;
 import pl.edu.pw.backend.event.dto.geojson.EventGeoJson;
 import pl.edu.pw.backend.event.dto.geojson.EventGeoJsonFeature;
 import pl.edu.pw.backend.event.forms.CreateEventForm;
@@ -21,11 +22,13 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserService userService;
+    private final ChatRoomService chatRoomService;
 
     @Override
     public Event addEvent(CreateEventForm form) {
         AppUser owner = userService.getUserById(form.ownerId());
         ZonedDateTime zonedDateTime = ZonedDateTime.of(form.startDatetime(), ZoneId.of(form.timeZoneId()));
+
         Event event = Event.builder()
                 .owner(owner)
                 .title(form.title())
@@ -36,10 +39,12 @@ public class EventServiceImpl implements EventService {
                 .creationDateTime(ZonedDateTime.now())
                 .iconFilename(form.iconFilename())
                 .maxParticipants(form.maxParticipants())
+                .chatId(chatRoomService.createNewChat(form.title()).getId())
                 .build();
         event.getParticipants().add(owner);
         event.setParticipantsCount(1);
         event = eventRepository.save(event);
+        chatRoomService.joinChat(owner.getId(), owner.getUsername(), event.getChatId());
         log.info("New event created: {}", event);
         return event;
     }
@@ -53,6 +58,8 @@ public class EventServiceImpl implements EventService {
     public void deleteEvent(Long id) {
 
         log.info("Deleting event with id: {}", id);
+        Event e = eventRepository.getReferenceById(id);
+        chatRoomService.deleteChat(e.getChatId());
         eventRepository.deleteById(id);
     }
 
@@ -79,6 +86,7 @@ public class EventServiceImpl implements EventService {
         event.getParticipants().add(participant);
         event.setParticipantsCount(event.getParticipantsCount() + 1);
         eventRepository.save(event);
+        chatRoomService.joinChat(participant.getId(), participant.getUsername(), event.getChatId());
         log.info("User {} assigned to event {}", participantId, eventId);
     }
 
@@ -90,6 +98,7 @@ public class EventServiceImpl implements EventService {
         event.getParticipants().remove(participant);
         event.setParticipantsCount(event.getParticipantsCount() - 1);
         eventRepository.save(event);
+        chatRoomService.leaveChat(event.getChatId(), participant.getId());
         log.info("User {} unassigned from event {}", participantId, eventId);
     }
 
