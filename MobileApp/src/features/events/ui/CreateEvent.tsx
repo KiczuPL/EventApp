@@ -182,6 +182,12 @@ export default ({
           maxParticipants,
         );
       }
+      setTitle('');
+      setDescription('');
+      setDate(undefined);
+      setCoordinates(undefined);
+      setIconFilename(undefined);
+      setMaxParticipants(2);
       toggle();
     }
   }, [
@@ -209,20 +215,21 @@ export default ({
     hour12: false,
   });
 
-  console.log(`title: ${title}`);
-  console.log(`description: ${description}`);
-  console.log(`date: ${date}`);
-  console.log(`coordinates: ${coordinates}`);
-  console.log(`initialIconFilename: ${initialIconFilename}`);
-  console.log(`iconFilename: ${iconFilename}`);
+  // console.log(`title: ${title}`);
+  // console.log(`description: ${description}`);
+  // console.log(`date: ${date}`);
+  // console.log(`coordinates: ${coordinates}`);
+  // console.log(`initialIconFilename: ${initialIconFilename}`);
+  // console.log(`iconFilename: ${iconFilename}`);
 
   return (
     <Modal
       visible={visible}
       onDismiss={toggle}
       contentContainerStyle={{backgroundColor: 'white', padding: 20}}>
-      <View style={{paddingBottom: 20}}>
+      <View style={{paddingBottom: 20}} key="MainContainer">
         <TextInput
+          key="TitleInput"
           label="Title"
           value={title}
           multiline={false}
@@ -231,6 +238,7 @@ export default ({
           onChangeText={text => setTitle(text)}
         />
         <TextInput
+          key="DescriptionInput"
           label="Description"
           value={description}
           multiline={true}

@@ -167,8 +167,11 @@ export default ({
             </Button>
             {details?.owner.username === user.nickname ? (
               <>
-                <Button mode="contained" onPress={toggleConfirmDeleteDialog}>
-                  Cancel
+                <Button
+                  mode="contained"
+                  style={{backgroundColor: theme.colors.error}}
+                  onPress={toggleConfirmDeleteDialog}>
+                  Revoke
                 </Button>
                 <Button mode="contained" onPress={toggleEditEventDialog}>
                   Edit

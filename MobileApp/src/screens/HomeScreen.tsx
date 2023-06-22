@@ -7,9 +7,12 @@ import {useAuth0} from 'react-native-auth0';
 import {createStackNavigator} from '@react-navigation/stack';
 import EventList from '../features/events/ui/EventList';
 import {useNavigation} from '@react-navigation/native';
+import SockJS from 'sockjs-client';
+import {Stomp} from '@stomp/stompjs';
+import 'text-encoding-polyfill';
 
 export default () => {
-  const {user, clearCredentials} = useAuth0();
+  const {user, clearSession} = useAuth0();
   const [createEventDialogVisible, setCreateEventDialogVisible] =
     useState(false);
   const theme = useTheme();
@@ -24,21 +27,34 @@ export default () => {
       justifyContent: 'space-around',
     },
     helloContainer: {
-      borderRadius: 20,
+      borderRadius: 5,
       margin: 5,
-      marginHorizontal: 5,
-      paddingVertical: 10,
+      marginHorizontal: 15,
+      paddingVertical: 30,
       backgroundColor: theme.colors.primary,
     },
     text: {
       justifyContent: 'center',
       flexShrink: 1,
     },
-    card: {
+    cardLeft: {
       flex: 1.0,
       backgroundColor: theme.colors.secondary,
-      borderRadius: 20,
+      borderRadius: 5,
       margin: 5,
+      marginLeft: 15,
+      marginHorizontal: 5,
+      paddingVertical: 10,
+      justifyContent: 'center',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    cardRight: {
+      flex: 1.0,
+      backgroundColor: theme.colors.secondary,
+      borderRadius: 5,
+      margin: 5,
+      marginRight: 15,
       marginHorizontal: 5,
       paddingVertical: 10,
       justifyContent: 'center',
@@ -65,7 +81,7 @@ export default () => {
               justifyContent: 'space-around',
             }}>
             <TouchableHighlight
-              style={styles.card}
+              style={styles.cardLeft}
               activeOpacity={0.85}
               underlayColor={theme.colors.primary}
               onPress={toggleCreateEventDialog}>
@@ -78,7 +94,7 @@ export default () => {
 
             <TouchableHighlight
               underlayColor={theme.colors.primary}
-              style={styles.card}
+              style={styles.cardRight}
               onPress={() => navigation.navigate('EventList')}>
               <View>
                 <Text style={styles.text} variant="headlineLarge">
@@ -94,22 +110,19 @@ export default () => {
                 justifyContent: 'space-around',
               }}>
               <TouchableHighlight
-                style={styles.card}
-                onPress={clearCredentials}
-                underlayColor={theme.colors.primary}>
-                <View style={styles.card}>
+                style={styles.cardLeft}
+                onPress={clearSession}
+                underlayColor={theme.colors.secondary}>
+                <View style={styles.cardLeft}>
                   <Text variant="headlineLarge">Logout</Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight
+
+              <View
                 style={{
-                  flex: 1,
-                  margin: 5,
-                  marginHorizontal: 5,
-                  paddingVertical: 10,
-                }}>
-                <View style={{flex: 1}}></View>
-              </TouchableHighlight>
+                  ...styles.cardRight,
+                  backgroundColor: theme.colors.background,
+                }}></View>
             </View>
           </View>
         </View>

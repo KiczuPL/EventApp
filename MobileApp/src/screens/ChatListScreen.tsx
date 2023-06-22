@@ -1,3 +1,5 @@
+import {ScrollView} from 'react-native';
+
 import {useCallback, useEffect, useState} from 'react';
 import {Animated, Image, StyleSheet, View} from 'react-native';
 import {useAuth0} from 'react-native-auth0';
@@ -8,10 +10,12 @@ import {
   TouchableRipple,
   useTheme,
 } from 'react-native-paper';
-import getUserEvents from '../api/getUserEvents';
-import {BACKEND_EVENT_PUBLIC_API_URL} from '../api/constants';
-import {ScrollView} from 'react-native-gesture-handler';
-import EventListDetailsDialog from './EventListDetailsDialog';
+import getUserEvents from '../features/events/api/getUserEvents';
+import {BACKEND_EVENT_PUBLIC_API_URL} from '../features/events/api/constants';
+import {useNavigation} from '@react-navigation/native';
+import {ChatStackParamList} from '../navigation/NavigationScreens';
+import {RouteProp} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 
 export type Event = {
   participants: {
@@ -24,6 +28,7 @@ export type Event = {
   };
   id: number;
   title: string;
+  chatId: number;
   description: string;
   iconFilename: string;
   startDateTime: string;
@@ -39,6 +44,8 @@ export default () => {
     undefined,
   );
 
+  const navigation =
+    useNavigation<StackScreenProps<ChatStackParamList, 'Chat'>>();
   const theme = useTheme();
   const getAccessToken = async () => {
     const credentials = await getCredentials();
@@ -54,10 +61,6 @@ export default () => {
     hour12: false,
   });
 
-  const toggleDetailsDialog = useCallback(() => {
-    setDetailsDialogVisible(!detailsDialogVisible);
-  }, [detailsDialogVisible, setDetailsDialogVisible]);
-
   const fetchEvents = useCallback(async () => {
     console.log('fetching');
     const token = await getAccessToken();
@@ -72,6 +75,12 @@ export default () => {
     if (isLoading) fetchEvents();
   }, [isLoading]);
 
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      setIsLoading(true);
+    });
+  }, []);
+
   const styles = StyleSheet.create({
     card: {
       margin: 5,
@@ -79,7 +88,8 @@ export default () => {
       marginHorizontal: 10,
     },
   });
-  console.log(events === undefined || isLoading);
+  // console.log(`eee:`);
+  // console.log(events);
   return (
     <View style={{flex: 1}}>
       {events === undefined || isLoading ? (
@@ -107,7 +117,12 @@ export default () => {
                 style={{flex: 1, borderRadius: 20}}
                 onPress={() => {
                   setSelectedEvent(event);
-                  toggleDetailsDialog();
+                  //console.log(`event: ${event?.chatId} selected`);
+                  navigation.navigate('Chat', {
+                    chatId: event?.chatId,
+                    chatTitle: event.title,
+                  });
+                  //navigation.push('Chat', {chatId: event?.chatId});
                 }}>
                 <Card.Title
                   title={event.title}
@@ -129,13 +144,6 @@ export default () => {
           ))}
         </ScrollView>
       )}
-      <EventListDetailsDialog
-        key={selectedEvent?.id}
-        visible={detailsDialogVisible}
-        toggleDialog={toggleDetailsDialog}
-        event={selectedEvent}
-        reloadList={() => setIsLoading(true)}
-      />
     </View>
   );
 };
